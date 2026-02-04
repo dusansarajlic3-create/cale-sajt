@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fora Tu Je Hrana</title>
+  <style>
+    :root{
+      --bg:#0f172a;
+      --card:#1f2937;
+      --accent:#22c55e;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+    }
+
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
+      background: linear-gradient(135deg,#0f172a 0%,#020617 100%);
+      color: var(--text);
+      overflow-x: hidden;
+      transition: background 1s ease;
+    }
+
+    /* Animated background */
+    body::before{
+      content:'';
+      position:fixed;
+      top:0; left:0; width:100%; height:100%;
+      background: radial-gradient(circle at 30% 30%, rgba(34,197,94,0.15), transparent 70%), radial-gradient(circle at 70% 70%, rgba(34,197,94,0.15), transparent 70%);
+      z-index:-1;
+      animation: moveBG 20s linear infinite;
+    }
+    @keyframes moveBG{
+      0%{background-position:0 0, 100% 100%;}
+      50%{background-position:100% 0, 0 100%;}
+      100%{background-position:0 0, 100% 100%;}
+    }
+
+    header{
+      position: sticky; top:0; z-index:10;
+      backdrop-filter: blur(12px);
+      background: rgba(2,6,23,.7);
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      transition: all 0.3s ease;
+    }
+
+    .wrap{max-width:1200px;margin:auto;padding:20px;}
+    .nav{display:flex;justify-content:space-between;align-items:center;}
+    .brand{font-weight:800;font-size:1.5em;}
+    .brand span{color:var(--accent);}
+    .btn{background: var(--accent); color: #020617; border: none; padding: 12px 18px; border-radius: 12px; font-weight:700; cursor:pointer; transition: transform 0.2s;}
+    .btn:hover{transform: scale(1.05);}
+    
+    .hero{text-align:center; padding:80px 20px; background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.05)); border-radius: 20px; margin-bottom:30px; animation:fadeIn 1.2s ease;}
+    .hero h1{font-size:clamp(36px,6vw,60px); margin-bottom:12px;}
+    .hero p{color:var(--muted); font-size:1.2em;}
+
+    .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px;}
+    .card{background: var(--card); border-radius:18px; padding:20px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); transition: transform 0.3s, box-shadow 0.3s;}
+    .card:hover{transform: translateY(-8px); box-shadow:0 12px 30px rgba(0,0,0,0.5);}
+    .pill{display:inline-block; padding:5px 10px; border-radius:999px; background:rgba(34,197,94,0.2); color:var(--accent); font-weight:700; margin-bottom:8px;}
+
+    .list{display:flex; flex-wrap:wrap; gap:20px;}
+    .item{flex:1 1 220px; background: var(--card); border-radius:16px; padding:16px; cursor:pointer; transition: transform 0.3s, background 0.3s;}
+    .item:hover{transform: translateY(-5px); background: linear-gradient(135deg, rgba(34,197,94,0.1), var(--card));}
+
+    #overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);display:none;z-index:20;transition:opacity 0.3s ease;}
+    #panel{position:fixed;top:0;right:-420px;width:380px;height:100%;background:#020617;padding:25px;transition:.5s;z-index:30;border-left:2px solid var(--accent);}
+    #panel.show{right:0;}
+    .added{animation:ping .4s;}
+    @keyframes ping{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+    .fade{opacity:0; transform:translateY(15px);}
+    .fade.show{opacity:1; transform:none; transition: all 0.8s ease-out;}
+    @keyframes fadeIn{0%{opacity:0; transform:translateY(20px);}100%{opacity:1; transform:translateY(0);}}
+
+    footer{color:var(--muted); text-align:center; padding:30px;}
+    
+    #login{position:fixed; inset:0; background:linear-gradient(120deg,#020617,#0f172a); display:flex; align-items:center; justify-content:center; z-index:9999;}
+    #login input{width:100%;padding:12px;border-radius:12px;border:none;margin-bottom:12px;font-size:16px;}
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <div id="login">
+    <div class="card" style="max-width:360px;width:90%; text-align:center;">
+      <h2>Prijava</h2>
+      <input id="name" type="text" placeholder="Unesi ime" />
+      <button class="btn" onclick="enterApp()">Uđi</button>
+    </div>
+  </div>
+
+  <header>
+    <div class="wrap nav">
+      <div class="brand">Fora <span>Tu Je Hrana</span></div>
+      <button class="btn" onclick="scrollToMenu()">Poruči</button>
+    </div>
+  </header>
+
+  <section class="hero wrap">
+    <h1 class="fade">Jedno mesto za office klopu 🍔</h1>
+    <p class="fade">Poruči hranu za ceo tim brzo i jednostavno. Jedna porudžbina, jedna dostava, jedna faktura.</p>
+  </section>
+
+  <section class="wrap grid">
+    <div class="card fade"><span class="pill">Kako radi</span><h3>Izaberi → Poruči → Stigne</h3><p class="muted">Zaposleni biraju, mi sabiramo. Sve stiže zajedno.</p></div>
+    <div class="card fade"><span class="pill">Za firme</span><h3>Jedna faktura</h3><p class="muted">Bez gomile računa i haosa.</p></div>
+    <div class="card fade"><span class="pill">Za tim</span><h3>Više izbora</h3><p class="muted">Burgeri, pasta, zdravo, slatko.</p></div>
+    <div class="card fade"><span class="pill">Sigurnost</span><h3>Demo app</h3><p class="muted">Podaci se ne čuvaju, sve je safe.</p></div>
+  </section>
+
+  <section id="menu" class="wrap">
+    <h2 class="fade">Današnja ponuda</h2>
+    <div class="list">
+      <div class="item fade" onclick="openPanel('Burger Box','Sočan burger, krompir i sos')">
+        <h4>Burger Box</h4><p class="muted">Burger + krompir</p>
+        <button class="btn" onclick="event.stopPropagation(); add('Burger Box')">Dodaj</button>
+      </div>
+      <div class="item fade" onclick="openPanel('Pasta Mix','Testenina sa bogatim sosom')">
+        <h4>Pasta Mix</h4><p class="muted">Testenina + sos</p>
+        <button class="btn" onclick="event.stopPropagation(); add('Pasta Mix')">Dodaj</button>
+      </div>
+      <div class="item fade" onclick="openPanel('Zdravi tanjir','Piletina, pirinač i povrće')">
+        <h4>Zdravi tanjir</h4><p class="muted">Piletina + povrće</p>
+        <button class="btn" onclick="event.stopPropagation(); add('Zdravi tanjir')">Dodaj</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="overlay" onclick="closePanel()"></div>
+  <aside id="panel">
+    <h3 id="pTitle"></h3>
+    <p id="pText" class="muted"></p>
+    <button class="btn" onclick="addFromPanel()">Dodaj u korpu</button>
+  </aside>
+
+  <section class="wrap" style="margin-top:30px">
+    <h2 class="fade">Tvoja porudžbina</h2>
+    <div id="cart" class="card fade">Još nema stavki.</div>
+  </section>
+
+  <footer class="footer">© 2026 Fora Tu Je Hrana</footer>
+
+  <script>
+    let selected='';
+    const cart=[];
+
+    function enterApp(){
+      const login = document.getElementById('login');
+      login.style.display='none';
+      document.body.style.overflow = 'auto';
+      document.querySelectorAll('.fade').forEach(el=>el.classList.add('show'));
+    }
+
+    function openPanel(t,txt){
+      selected=t;
+      document.getElementById('pTitle').innerText=t;
+      document.getElementById('pText').innerText=txt;
+      document.getElementById('overlay').style.display='block';
+      document.getElementById('panel').classList.add('show');
+    }
+
+    function closePanel(){
+      document.getElementById('overlay').style.display='none';
+      document.getElementById('panel').classList.remove('show');
+    }
+
+    function addFromPanel(){ add(selected); closePanel(); }
+
+    function add(item){
+      cart.push(item);
+      const el=document.getElementById('cart');
+      el.classList.add('added'); 
+      setTimeout(()=>el.classList.remove('added'),400);
+      el.innerHTML='<ul>'+cart.map(i=>`<li>${i}</li>`).join('')+'</ul>';
+    }
+
+    const obs=new IntersectionObserver(entries=>entries.forEach(e=>e.isIntersecting&&e.target.classList.add('show')),{threshold:.2});
+    document.querySelectorAll('.fade').forEach(el=>obs.observe(el));
+
+    function scrollToMenu(){ document.getElementById('menu').scrollIntoView({behavior:'smooth'}); }
+  </script>
+
+</body>
+</html>
